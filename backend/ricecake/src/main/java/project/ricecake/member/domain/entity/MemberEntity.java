@@ -1,19 +1,21 @@
 package project.ricecake.member.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import project.ricecake.member.domain.request.PostSignupReq;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "member")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class Member {
+@Builder
+public class MemberEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_idx", nullable = false)
@@ -32,9 +34,20 @@ public class Member {
     @Column(name = "member_age", nullable = false)
     private Integer memberAge;
 
+    @CreationTimestamp
     @Column(name = "started_at", nullable = false)
     private LocalDateTime startedAt;
 
+    @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    public static MemberEntity buildMember(PostSignupReq postSignupReq) {
+        return MemberEntity.builder()
+                .memberId(postSignupReq.getMemberId())
+                .memberPw(postSignupReq.getMemberPw())
+                .memberName(postSignupReq.getMemberName())
+                .memberAge(postSignupReq.getMemberAge())
+                .build();
+    }
 }
