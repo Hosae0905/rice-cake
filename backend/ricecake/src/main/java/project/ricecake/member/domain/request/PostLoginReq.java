@@ -5,9 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class PostSignupReq {
+public class PostLoginReq {
     private String memberId;
     private String memberPw;
-    private String memberName;
-    private Integer memberAge;
 }
