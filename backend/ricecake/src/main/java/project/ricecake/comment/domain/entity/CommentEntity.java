@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import project.ricecake.comment.domain.request.PostWriteCommentReq;
+import project.ricecake.member.domain.entity.MemberEntity;
 
 import java.time.LocalDateTime;
 
@@ -34,6 +35,12 @@ public class CommentEntity {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "member_Idx")
+    private MemberEntity member;
+
+    // TODO: BoardEntity와 다대일 연관관계 매핑
 
     public static CommentEntity buildComment(PostWriteCommentReq postWriteCommentReq) {
         return CommentEntity.builder()

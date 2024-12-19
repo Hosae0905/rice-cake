@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import project.ricecake.board.domain.entity.BoardEntity;
+import project.ricecake.comment.domain.entity.CommentEntity;
 import project.ricecake.member.domain.request.PostSignupReq;
 
 import java.time.LocalDateTime;
@@ -48,8 +49,8 @@ public class MemberEntity {
     @OneToMany(mappedBy = "boardIdx")
     private List<BoardEntity> boards = new ArrayList<>();
 
-
-    // TODO: Comment 엔티티와 다대다 관계 매핑 필요
+    @OneToMany(mappedBy = "commentIdx")
+    private List<CommentEntity> comments = new ArrayList<>();
 
     public static MemberEntity buildMember(PostSignupReq postSignupReq) {
         return MemberEntity.builder()
