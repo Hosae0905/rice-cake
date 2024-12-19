@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import project.ricecake.board.domain.request.PostCreateBoardReq;
+import project.ricecake.member.domain.entity.MemberEntity;
 
 import java.time.LocalDateTime;
 
@@ -38,6 +39,12 @@ public class BoardEntity {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "member_Idx")
+    private MemberEntity member;
+
+    // TODO: Comment 엔티티와 다대다 관계 매핑 필요
 
     public static BoardEntity buildBoard(PostCreateBoardReq postCreateBoardReq) {
         return BoardEntity.builder()

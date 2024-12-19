@@ -4,9 +4,12 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import project.ricecake.board.domain.entity.BoardEntity;
 import project.ricecake.member.domain.request.PostSignupReq;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "member")
@@ -41,6 +44,12 @@ public class MemberEntity {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "boardIdx")
+    private List<BoardEntity> boards = new ArrayList<>();
+
+
+    // TODO: Comment 엔티티와 다대다 관계 매핑 필요
 
     public static MemberEntity buildMember(PostSignupReq postSignupReq) {
         return MemberEntity.builder()
