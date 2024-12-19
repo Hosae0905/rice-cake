@@ -8,4 +8,5 @@ import lombok.Getter;
 public class PostCreateBoardReq {
     private String boardTitle;
     private String boardContent;
+    private String memberId;
 }
