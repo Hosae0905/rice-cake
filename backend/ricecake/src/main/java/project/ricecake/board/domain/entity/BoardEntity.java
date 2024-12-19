@@ -50,10 +50,11 @@ public class BoardEntity {
     @OneToMany(mappedBy = "commentIdx")
     private List<CommentEntity> comments = new ArrayList<>();
 
-    public static BoardEntity buildBoard(PostCreateBoardReq postCreateBoardReq) {
+    public static BoardEntity buildBoard(PostCreateBoardReq postCreateBoardReq, MemberEntity member) {
         return BoardEntity.builder()
                 .boardTitle(postCreateBoardReq.getBoardTitle())
                 .boardContent(postCreateBoardReq.getBoardContent())
+                .member(member)
                 .build();
     }
 }
