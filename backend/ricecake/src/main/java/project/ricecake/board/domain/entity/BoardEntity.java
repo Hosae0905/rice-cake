@@ -8,9 +8,12 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import project.ricecake.board.domain.request.PostCreateBoardReq;
+import project.ricecake.comment.domain.entity.CommentEntity;
 import project.ricecake.member.domain.entity.MemberEntity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "board")
@@ -44,7 +47,8 @@ public class BoardEntity {
     @JoinColumn(name = "member_Idx")
     private MemberEntity member;
 
-    // TODO: Comment 엔티티와 다대다 관계 매핑 필요
+    @OneToMany(mappedBy = "commentIdx")
+    private List<CommentEntity> comments = new ArrayList<>();
 
     public static BoardEntity buildBoard(PostCreateBoardReq postCreateBoardReq) {
         return BoardEntity.builder()

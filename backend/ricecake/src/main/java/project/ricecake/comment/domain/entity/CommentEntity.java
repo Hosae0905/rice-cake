@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import project.ricecake.board.domain.entity.BoardEntity;
 import project.ricecake.comment.domain.request.PostWriteCommentReq;
 import project.ricecake.member.domain.entity.MemberEntity;
 
@@ -40,7 +41,9 @@ public class CommentEntity {
     @JoinColumn(name = "member_Idx")
     private MemberEntity member;
 
-    // TODO: BoardEntity와 다대일 연관관계 매핑
+    @ManyToOne
+    @JoinColumn(name = "board_Idx")
+    private BoardEntity board;
 
     public static CommentEntity buildComment(PostWriteCommentReq postWriteCommentReq) {
         return CommentEntity.builder()
