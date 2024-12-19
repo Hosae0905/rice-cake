@@ -8,6 +8,8 @@ import project.ricecake.board.domain.response.GetBoardListRes;
 import project.ricecake.board.domain.response.GetBoardRes;
 import project.ricecake.board.repository.BoardRepository;
 import project.ricecake.common.BaseResponse;
+import project.ricecake.member.domain.entity.MemberEntity;
+import project.ricecake.member.repository.MemberRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,15 +19,21 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
+    private final MemberRepository memberRepository;
 
     public Object createBoard(PostCreateBoardReq postCreateBoardReq) {
-        BoardEntity board = BoardEntity.buildBoard(postCreateBoardReq);
-
-        if (board != null) {
-            boardRepository.save(board);
-            return BaseResponse.successResponse("BOARD_001", true, "게시글 생성 성공", "ok");
+        Optional<MemberEntity> findMember = memberRepository.findByMemberId(postCreateBoardReq.getMemberId());
+        if (findMember.isPresent()) {
+            MemberEntity member = findMember.get();
+            BoardEntity board = BoardEntity.buildBoard(postCreateBoardReq, member);
+            if (board != null) {
+                boardRepository.save(board);
+                return BaseResponse.successResponse("BOARD_001", true, "게시글 생성 성공", "ok");
+            } else {
+                return BaseResponse.failResponse("BOARD_ERROR_001", false, "게시글 생성 실패", "fail");
+            }
         } else {
-            return BaseResponse.failResponse("BOARD_ERROR_001", false, "게시글 생성 실패", "fail");
+            return BaseResponse.failResponse("MEMBER_ERROR_003", false, "회원이 없음", "fail");
         }
     }
 
@@ -36,7 +44,8 @@ public class BoardService {
             List<GetBoardListRes> boardList = new ArrayList<>();
 
             for (BoardEntity board : boards) {
-                boardList.add(GetBoardListRes.buildBoardListRes(board.getBoardTitle(), board.getBoardContent()));
+                // TODO: 코드 분석해보기
+                boardList.add(GetBoardListRes.buildBoardListRes(board.getBoardTitle(), board.getBoardContent(), board.getMember().getMemberName()));
             }
 
             return BaseResponse.successResponse("BOARD_002", true, "게시글 조회 성공", boardList);
@@ -50,7 +59,7 @@ public class BoardService {
 
         if (findBoard.isPresent()) {
             BoardEntity board = findBoard.get();
-            GetBoardRes boardRes = GetBoardRes.buildBoardRes(board.getBoardTitle(), board.getBoardContent());
+            GetBoardRes boardRes = GetBoardRes.buildBoardRes(board.getBoardTitle(), board.getBoardContent(), board.getMember().getMemberName());
             return BaseResponse.successResponse("BOARD_003", true, "게시글 단건 조회 성공", boardRes);
         } else {
             return BaseResponse.failResponse("BOARD_ERROR_003", false, "게시글 단건 조회 실패", "fail");
