@@ -45,9 +45,11 @@ public class CommentEntity {
     @JoinColumn(name = "board_Idx")
     private BoardEntity board;
 
-    public static CommentEntity buildComment(PostWriteCommentReq postWriteCommentReq) {
+    public static CommentEntity buildComment(PostWriteCommentReq postWriteCommentReq, MemberEntity member, BoardEntity board) {
         return CommentEntity.builder()
                 .commentContent(postWriteCommentReq.getCommentContent())
+                .member(member)
+                .board(board)
                 .build();
     }
 }

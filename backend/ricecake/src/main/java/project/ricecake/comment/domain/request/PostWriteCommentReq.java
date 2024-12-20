@@ -9,4 +9,6 @@ import lombok.NoArgsConstructor;
 @Getter
 public class PostWriteCommentReq {
     private String commentContent;
+    private String memberId;
+    private Long boardIdx;
 }
