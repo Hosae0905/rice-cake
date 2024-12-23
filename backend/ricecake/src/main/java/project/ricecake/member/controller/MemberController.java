@@ -1,5 +1,6 @@
 package project.ricecake.member.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,12 +19,12 @@ public class MemberController {
     private final MemberService memberService;
 
     @RequestMapping(method = RequestMethod.POST, value = "/signup")
-    public ResponseEntity<Object> memberSignup(@RequestBody PostSignupReq postSignupReq) {
+    public ResponseEntity<Object> memberSignup(@RequestBody @Valid PostSignupReq postSignupReq) {
         return ResponseEntity.ok().body(memberService.memberSignup(postSignupReq));
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/login")
-    public ResponseEntity<Object> memberLogin(@RequestBody PostLoginReq postLoginReq) {
+    public ResponseEntity<Object> memberLogin(@RequestBody @Valid PostLoginReq postLoginReq) {
         return ResponseEntity.ok().body(memberService.memberLogin(postLoginReq));
     }
 }

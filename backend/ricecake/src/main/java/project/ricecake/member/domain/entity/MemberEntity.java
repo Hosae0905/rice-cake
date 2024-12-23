@@ -29,7 +29,6 @@ public class MemberEntity {
     private String memberId;
 
     @Column(name = "member_pw", nullable = false, length = 50)
-
     private String memberPw;
 
     @Column(name = "member_name", nullable = false, length = 20)
