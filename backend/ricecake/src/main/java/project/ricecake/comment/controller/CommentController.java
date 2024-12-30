@@ -1,5 +1,6 @@
 package project.ricecake.comment.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,7 +17,7 @@ public class CommentController {
     private final CommentService commentService;
 
     @RequestMapping(method = RequestMethod.POST, value = "/write")
-    public ResponseEntity<Object> writeComment(@RequestBody PostWriteCommentReq postWriteCommentReq) {
+    public ResponseEntity<Object> writeComment(@RequestBody @Valid PostWriteCommentReq postWriteCommentReq) {
         return ResponseEntity.ok().body(commentService.writeComment(postWriteCommentReq));
     }
 
