@@ -8,6 +8,8 @@ import project.ricecake.comment.domain.entity.CommentEntity;
 import project.ricecake.comment.domain.request.PostWriteCommentReq;
 import project.ricecake.comment.repository.CommentRepository;
 import project.ricecake.common.BaseResponse;
+import project.ricecake.error.exception.notfound.BoardNotFoundException;
+import project.ricecake.error.exception.notfound.UserNotFoundException;
 import project.ricecake.member.domain.entity.MemberEntity;
 import project.ricecake.member.repository.MemberRepository;
 
@@ -30,7 +32,7 @@ public class CommentService {
         if (findMember.isPresent()) {
             member = findMember.get();
         } else {
-            return BaseResponse.failResponse("MEMBER_ERROR_003", false, "회원이 없음", "fail");
+            throw new UserNotFoundException();
         }
 
         Optional<BoardEntity> findBoard = boardRepository.findByBoardIdx(postWriteCommentReq.getBoardIdx());
@@ -38,15 +40,11 @@ public class CommentService {
         if (findBoard.isPresent()) {
             board = findBoard.get();
         } else {
-            return BaseResponse.failResponse("BOARD_ERROR_002", false, "게시글이 없습니다.", "fail");
+            throw new BoardNotFoundException();
         }
 
-        if (postWriteCommentReq.getCommentContent() != null) {
-            CommentEntity comment = CommentEntity.buildComment(postWriteCommentReq, member, board);
-            commentRepository.save(comment);
-            return BaseResponse.successResponse("COMMENT_001", true, "댓글 작성 성공", "ok");
-        } else {
-            return BaseResponse.failResponse("COMMENT_ERROR_001", false, "댓글 작성 실패", "fail");
-        }
+        CommentEntity comment = CommentEntity.buildComment(postWriteCommentReq, member, board);
+        commentRepository.save(comment);
+        return BaseResponse.successResponse("COMMENT_001", true, "댓글 작성 성공", "ok");
     }
 }
