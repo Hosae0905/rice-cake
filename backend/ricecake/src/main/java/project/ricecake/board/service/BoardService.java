@@ -8,6 +8,7 @@ import project.ricecake.board.domain.response.GetBoardListRes;
 import project.ricecake.board.domain.response.GetBoardRes;
 import project.ricecake.board.repository.BoardRepository;
 import project.ricecake.common.BaseResponse;
+import project.ricecake.error.exception.BoardNotFoundException;
 import project.ricecake.error.exception.UserNotFoundException;
 import project.ricecake.member.domain.entity.MemberEntity;
 import project.ricecake.member.repository.MemberRepository;
@@ -47,7 +48,7 @@ public class BoardService {
 
             return BaseResponse.successResponse("BOARD_002", true, "게시글 조회 성공", boardList);
         } else {
-            return BaseResponse.failResponse("BOARD_ERROR_002", false, "게시글이 없습니다.", "fail");
+            throw new BoardNotFoundException();
         }
     }
 
