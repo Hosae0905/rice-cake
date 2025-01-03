@@ -9,9 +9,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import project.ricecake.error.exception.BusinessException;
-import project.ricecake.error.exception.DuplicateException;
-import project.ricecake.error.exception.NotFoundException;
-import project.ricecake.error.exception.UnauthorizedException;
+import project.ricecake.error.exception.duplicate.DuplicateException;
+import project.ricecake.error.exception.notfound.NotFoundException;
+import project.ricecake.error.exception.unauthorized.UnauthorizedException;
 
 @RestControllerAdvice
 @Slf4j
@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<ErrorResponse> handleValidException(MethodArgumentNotValidException e) {
         FieldError fieldError = e.getBindingResult().getFieldError();
         HttpStatusCode status = e.getStatusCode();
-        ErrorResponse errorResponse = new ErrorResponse(status.value(), ErrorCode.INTERNAL_SERVER_ERROR, fieldError.getDefaultMessage());
+        ErrorResponse errorResponse = new ErrorResponse(status.value(), ErrorCode.INVALID_INPUT_VALUE, fieldError.getDefaultMessage());
         return new ResponseEntity<>(errorResponse, status);
     }
 
