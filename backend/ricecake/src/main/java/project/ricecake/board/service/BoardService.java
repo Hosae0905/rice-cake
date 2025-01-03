@@ -8,6 +8,7 @@ import project.ricecake.board.domain.response.GetBoardListRes;
 import project.ricecake.board.domain.response.GetBoardRes;
 import project.ricecake.board.repository.BoardRepository;
 import project.ricecake.common.BaseResponse;
+import project.ricecake.error.exception.UserNotFoundException;
 import project.ricecake.member.domain.entity.MemberEntity;
 import project.ricecake.member.repository.MemberRepository;
 
@@ -26,14 +27,10 @@ public class BoardService {
         if (findMember.isPresent()) {
             MemberEntity member = findMember.get();
             BoardEntity board = BoardEntity.buildBoard(postCreateBoardReq, member);
-            if (board != null) {
-                boardRepository.save(board);
-                return BaseResponse.successResponse("BOARD_001", true, "게시글 생성 성공", "ok");
-            } else {
-                return BaseResponse.failResponse("BOARD_ERROR_001", false, "게시글 생성 실패", "fail");
-            }
+            boardRepository.save(board);
+            return BaseResponse.successResponse("BOARD_001", true, "게시글 생성 성공", "ok");
         } else {
-            return BaseResponse.failResponse("MEMBER_ERROR_003", false, "회원이 없음", "fail");
+            throw new UserNotFoundException();
         }
     }
 
