@@ -8,6 +8,8 @@ import project.ricecake.board.domain.response.GetBoardListRes;
 import project.ricecake.board.domain.response.GetBoardRes;
 import project.ricecake.board.repository.BoardRepository;
 import project.ricecake.common.BaseResponse;
+import project.ricecake.error.exception.BoardNotFoundException;
+import project.ricecake.error.exception.UserNotFoundException;
 import project.ricecake.member.domain.entity.MemberEntity;
 import project.ricecake.member.repository.MemberRepository;
 
@@ -26,14 +28,10 @@ public class BoardService {
         if (findMember.isPresent()) {
             MemberEntity member = findMember.get();
             BoardEntity board = BoardEntity.buildBoard(postCreateBoardReq, member);
-            if (board != null) {
-                boardRepository.save(board);
-                return BaseResponse.successResponse("BOARD_001", true, "게시글 생성 성공", "ok");
-            } else {
-                return BaseResponse.failResponse("BOARD_ERROR_001", false, "게시글 생성 실패", "fail");
-            }
+            boardRepository.save(board);
+            return BaseResponse.successResponse("BOARD_001", true, "게시글 생성 성공", "ok");
         } else {
-            return BaseResponse.failResponse("MEMBER_ERROR_003", false, "회원이 없음", "fail");
+            throw new UserNotFoundException();
         }
     }
 
@@ -50,7 +48,7 @@ public class BoardService {
 
             return BaseResponse.successResponse("BOARD_002", true, "게시글 조회 성공", boardList);
         } else {
-            return BaseResponse.failResponse("BOARD_ERROR_002", false, "게시글이 없습니다.", "fail");
+            throw new BoardNotFoundException();
         }
     }
 
@@ -62,7 +60,7 @@ public class BoardService {
             GetBoardRes boardRes = GetBoardRes.buildBoardRes(board.getBoardTitle(), board.getBoardContent(), board.getMember().getMemberName());
             return BaseResponse.successResponse("BOARD_003", true, "게시글 단건 조회 성공", boardRes);
         } else {
-            return BaseResponse.failResponse("BOARD_ERROR_003", false, "게시글 단건 조회 실패", "fail");
+            throw new BoardNotFoundException();
         }
     }
 }
