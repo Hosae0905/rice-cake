@@ -60,7 +60,7 @@ public class BoardService {
             GetBoardRes boardRes = GetBoardRes.buildBoardRes(board.getBoardTitle(), board.getBoardContent(), board.getMember().getMemberName());
             return BaseResponse.successResponse("BOARD_003", true, "게시글 단건 조회 성공", boardRes);
         } else {
-            return BaseResponse.failResponse("BOARD_ERROR_003", false, "게시글 단건 조회 실패", "fail");
+            throw new BoardNotFoundException();
         }
     }
 }
