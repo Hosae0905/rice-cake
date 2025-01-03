@@ -1,4 +1,4 @@
-package project.ricecake.error.exception;
+package project.ricecake.error.exception.unauthorized;
 
 import project.ricecake.error.ErrorCode;
 

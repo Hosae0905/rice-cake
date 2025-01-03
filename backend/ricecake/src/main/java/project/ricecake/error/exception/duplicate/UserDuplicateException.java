@@ -1,6 +1,7 @@
-package project.ricecake.error.exception;
+package project.ricecake.error.exception.duplicate;
 
 import project.ricecake.error.ErrorCode;
+import project.ricecake.error.exception.duplicate.DuplicateException;
 
 public class UserDuplicateException extends DuplicateException {
     public UserDuplicateException() {

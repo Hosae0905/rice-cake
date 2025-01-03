@@ -1,4 +1,4 @@
-package project.ricecake.error.exception;
+package project.ricecake.error.exception.notfound;
 
 import project.ricecake.error.ErrorCode;
 
