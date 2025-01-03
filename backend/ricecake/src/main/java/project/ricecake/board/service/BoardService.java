@@ -8,8 +8,8 @@ import project.ricecake.board.domain.response.GetBoardListRes;
 import project.ricecake.board.domain.response.GetBoardRes;
 import project.ricecake.board.repository.BoardRepository;
 import project.ricecake.common.BaseResponse;
-import project.ricecake.error.exception.BoardNotFoundException;
-import project.ricecake.error.exception.UserNotFoundException;
+import project.ricecake.error.exception.notfound.BoardNotFoundException;
+import project.ricecake.error.exception.notfound.UserNotFoundException;
 import project.ricecake.member.domain.entity.MemberEntity;
 import project.ricecake.member.repository.MemberRepository;
 
