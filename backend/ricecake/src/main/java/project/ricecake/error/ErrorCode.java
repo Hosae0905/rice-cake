@@ -22,6 +22,7 @@ public enum ErrorCode {
     MISMATCH_PASSWORD("MEMBER_E003", "비밀번호 틀립니다."),
 
     // TODO: Board 관련 에러코드
+    BOARD_NOT_FOUND("BOARD_E001", "게시글을 찾을 수 없습니다."),
 
     // TODO: Comment 관련 에러코드
     ;
