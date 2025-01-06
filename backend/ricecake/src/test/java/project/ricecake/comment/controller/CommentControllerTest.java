@@ -1,6 +1,7 @@
 package project.ricecake.comment.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
@@ -58,6 +59,29 @@ class CommentControllerTest {
                 .andExpect(jsonPath("$.isSuccess").value("true"))
                 .andExpect(jsonPath("$.message").value("댓글 작성 성공"))
                 .andExpect(jsonPath("$.result").value("ok"))
+                .andDo(print());
+    }
+
+    @DisplayName("1-1. 댓글 내용 유효성 검증에 실패한 경우")
+    @Test
+    void writeFailInvalidComment() throws Exception {
+
+        //given
+        PostWriteCommentReq postWriteCommentReq = new PostWriteCommentReq("", "member01", 1L);
+
+        //when
+        ResultActions resultActions = mockMvc.perform(
+                post("/api/v1/comment/write")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(postWriteCommentReq))
+        );
+
+        //then
+        resultActions
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value("400"))
+                .andExpect(jsonPath("$.code").value("COMMON_E001"))
+                .andExpect(jsonPath("$.message").value("댓글 내용은 공백일 수 없습니다."))
                 .andDo(print());
     }
 }
