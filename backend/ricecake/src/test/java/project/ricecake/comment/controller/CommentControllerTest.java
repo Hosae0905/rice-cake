@@ -85,4 +85,33 @@ class CommentControllerTest {
                 .andExpect(jsonPath("$.message").value("댓글 내용은 공백일 수 없습니다."))
                 .andDo(print());
     }
+
+    @DisplayName("1-2. 작성자 아이디 유효성 검증에 실패한 경우")
+    @Test
+    void writeFailInvalidMemberId() throws Exception {
+
+        //given
+        PostWriteCommentReq postWriteCommentReq = new PostWriteCommentReq("test comment", "", 1L);
+
+        //when
+        ResultActions resultActions = mockMvc.perform(
+                post("/api/v1/comment/write")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(postWriteCommentReq))
+        );
+
+        //then
+        resultActions
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value("400"))
+                .andExpect(jsonPath("$.code").value("COMMON_E001"))
+                .andExpect(jsonPath("$.message").value("아이디 형식이 잘못되었습니다."))
+                .andDo(print());
+    }
+    
+    //TODO: 작성자를 찾을 수 없는 경우
+    
+    //TODO: 게시글이 없는 경우
+    
+    //TODO: 게시글 아이디의 타입이 안 맞는 경우
 }
