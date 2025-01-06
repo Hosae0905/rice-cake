@@ -7,6 +7,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @EnableWebSecurity
 @Configuration
@@ -24,6 +29,7 @@ public class WebSecurityConfig {
                                 .anyRequest().authenticated()
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurer()))
         ;
 
         return http.build();
@@ -32,5 +38,16 @@ public class WebSecurityConfig {
     //TODO: 로그아웃 설정
 
     //TODO: CORS 설정
+    public CorsConfigurationSource corsConfigurer() {
+        CorsConfiguration corsConfig = new CorsConfiguration();
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
+        corsConfig.setAllowedOrigins(List.of("*"));
+        corsConfig.setAllowedHeaders(List.of("*"));
+        corsConfig.setAllowedMethods(List.of("GET", "POST", "PATCH", "DELETE"));
+        corsConfig.setAllowCredentials(true);
+        corsConfig.setMaxAge(3600L);
+        source.registerCorsConfiguration("/**", corsConfig);
+        return source;
+    }
 }
