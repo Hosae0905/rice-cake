@@ -36,6 +36,7 @@ class CommentControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @DisplayName("1. 댓글 작성 성공 테스트")
     @Test
     void writeCommentSuccess() throws Exception {
 
