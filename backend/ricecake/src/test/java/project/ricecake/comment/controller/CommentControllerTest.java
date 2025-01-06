@@ -107,7 +107,7 @@ class CommentControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value("400"))
                 .andExpect(jsonPath("$.code").value("COMMON_E001"))
-                .andExpect(jsonPath("$.message").value("아이디 형식이 잘못되었습니다."))
+                .andExpect(jsonPath("$.message").value("회원 아이디는 공백일 수 없습니다."))
                 .andDo(print());
     }
 
