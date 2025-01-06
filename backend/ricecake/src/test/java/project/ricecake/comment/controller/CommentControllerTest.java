@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import project.ricecake.comment.domain.request.PostWriteCommentReq;
 import project.ricecake.comment.service.CommentService;
 import project.ricecake.common.BaseResponse;
+import project.ricecake.error.exception.notfound.UserNotFoundException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
@@ -108,10 +109,34 @@ class CommentControllerTest {
                 .andExpect(jsonPath("$.message").value("아이디 형식이 잘못되었습니다."))
                 .andDo(print());
     }
-    
+
     //TODO: 작성자를 찾을 수 없는 경우
-    
+    @DisplayName("1-3. 작성자를 찾을 수 없는 경우")
+    @Test
+    void writeFailNotFoundMember() throws Exception {
+
+        //given
+        PostWriteCommentReq postWriteCommentReq = new PostWriteCommentReq("test comment", "tester01", 1L);
+
+        //when
+        given(commentService.writeComment(any(PostWriteCommentReq.class))).willThrow(new UserNotFoundException());
+
+        ResultActions resultActions = mockMvc.perform(
+                post("/api/v1/comment/write")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(postWriteCommentReq))
+        );
+
+        //then
+        resultActions
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value("404"))
+                .andExpect(jsonPath("$.code").value("MEMBER_E001"))
+                .andExpect(jsonPath("$.message").value("회원을 찾을 수 없습니다."))
+                .andDo(print());
+    }
+
     //TODO: 게시글이 없는 경우
-    
+
     //TODO: 게시글 아이디의 타입이 안 맞는 경우
 }
