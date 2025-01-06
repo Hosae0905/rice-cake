@@ -1,6 +1,9 @@
 package project.ricecake.member.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import project.ricecake.common.BaseResponse;
@@ -16,7 +19,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class MemberService {
+public class MemberService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
@@ -51,5 +54,16 @@ public class MemberService {
         }
 
         throw new UserNotFoundException();
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String memberId) {
+        Optional<MemberEntity> member = memberRepository.findByMemberId(memberId);
+
+        if (member.isPresent()) {
+            return member.get();
+        } else {
+            throw new UserNotFoundException();
+        }
     }
 }
