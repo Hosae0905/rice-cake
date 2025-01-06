@@ -159,6 +159,4 @@ class CommentControllerTest {
                 .andExpect(jsonPath("$.message").value("게시글을 찾을 수 없습니다."))
                 .andDo(print());
     }
-
-    //TODO: 게시글 아이디의 타입이 안 맞는 경우
 }
