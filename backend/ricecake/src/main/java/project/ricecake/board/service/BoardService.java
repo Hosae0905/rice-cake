@@ -1,6 +1,9 @@
 package project.ricecake.board.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import project.ricecake.board.domain.entity.BoardEntity;
 import project.ricecake.board.domain.request.PostCreateBoardReq;
@@ -35,14 +38,14 @@ public class BoardService {
         }
     }
 
-    public Object getBoardList() {
-        List<BoardEntity> boards = boardRepository.findAll();
+    public Object getBoardList(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
 
+        Page<BoardEntity> boards = boardRepository.findAll(pageable);
         if (!boards.isEmpty()) {
             List<GetBoardListRes> boardList = new ArrayList<>();
 
             for (BoardEntity board : boards) {
-                // TODO: 코드 분석해보기
                 boardList.add(GetBoardListRes.buildBoardListRes(board.getBoardTitle(), board.getBoardContent(), board.getMember().getMemberName()));
             }
 

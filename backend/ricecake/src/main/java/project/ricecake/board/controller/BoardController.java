@@ -19,8 +19,10 @@ public class BoardController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "")
-    public ResponseEntity<Object> getBoardList() {
-        return ResponseEntity.ok().body(boardService.getBoardList());
+    public ResponseEntity<Object> getBoardList(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok().body(boardService.getBoardList(page, size));
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/{boardIdx}")
