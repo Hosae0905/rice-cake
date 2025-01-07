@@ -3,10 +3,7 @@ package project.ricecake.comment.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import project.ricecake.comment.domain.request.PostWriteCommentReq;
 import project.ricecake.comment.service.CommentService;
 
@@ -20,6 +17,17 @@ public class CommentController {
     public ResponseEntity<Object> writeComment(@RequestBody @Valid PostWriteCommentReq postWriteCommentReq) {
         return ResponseEntity.ok().body(commentService.writeComment(postWriteCommentReq));
     }
+
+    @RequestMapping(method = RequestMethod.GET, value = "{boardIdx}")
+    public ResponseEntity<Object> writeComment(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @PathVariable Long boardIdx
+    ) {
+        return ResponseEntity.ok().body(commentService.getCommentList(page, size, boardIdx));
+    }
+
+
 
     // TODO: 댓글 수정 기능 개발하기.
 
