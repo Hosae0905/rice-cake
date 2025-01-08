@@ -1,43 +1,60 @@
 package project.ricecake.config;
 
-import lombok.extern.slf4j.Slf4j;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import project.ricecake.error.ErrorCode;
+import project.ricecake.error.ErrorResponse;
 
+import java.io.PrintWriter;
 import java.util.List;
 
 @EnableWebSecurity
 @Configuration
-@Slf4j
 public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests(authorizeRequests ->
-                        authorizeRequests
-                                .requestMatchers("api/v1/member/**").permitAll()
-                                .requestMatchers("api/v1/board/**").permitAll()
-                                .requestMatchers("api/v1/comment/**").permitAll()
-                                .anyRequest().authenticated()
+                .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                        .requestMatchers("api/v1/member/**").permitAll()
+                        .requestMatchers("api/v1/board/**").permitAll()
+                        .requestMatchers("api/v1/comment/**").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurer()))
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .exceptionHandling(exception -> exception
+                        .accessDeniedHandler(accessDeniedHandler)
+                        .authenticationEntryPoint(authenticationEntryPoint)
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/api/v1/member/logout")
+                        .logoutSuccessHandler(((request, response, authentication) -> {
+                            response.sendRedirect("/login");
+                        }))
+                )
         ;
 
         return http.build();
     }
 
-    //TODO: 로그아웃 설정
-
-    //TODO: CORS 설정
     public CorsConfigurationSource corsConfigurer() {
         CorsConfiguration corsConfig = new CorsConfiguration();
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -50,4 +67,32 @@ public class WebSecurityConfig {
         source.registerCorsConfiguration("/**", corsConfig);
         return source;
     }
+
+    private final AccessDeniedHandler accessDeniedHandler = ((request, response, accessDeniedException) -> {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.FORBIDDEN.value(), ErrorCode.FORBIDDEN);
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        response.setStatus(HttpStatus.FORBIDDEN.value());
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+        String result = objectMapper.writeValueAsString(errorResponse);
+        PrintWriter writer = response.getWriter();
+        writer.write(result);
+        writer.flush();
+    });
+
+    private final AuthenticationEntryPoint authenticationEntryPoint = ((request, response, authException) -> {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), ErrorCode.UNAUTHORIZED);
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+        String result = objectMapper.writeValueAsString(errorResponse);
+        PrintWriter writer = response.getWriter();
+        writer.write(result);
+        writer.flush();
+    });
 }
