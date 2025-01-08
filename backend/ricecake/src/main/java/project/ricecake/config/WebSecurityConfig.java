@@ -40,6 +40,12 @@ public class WebSecurityConfig {
                         .accessDeniedHandler(accessDeniedHandler)
                         .authenticationEntryPoint(authenticationEntryPoint)
                 )
+                .logout(logout -> logout
+                        .logoutUrl("/api/v1/member/logout")
+                        .logoutSuccessHandler(((request, response, authentication) -> {
+                            response.sendRedirect("/login");
+                        }))
+                )
         ;
 
         return http.build();
