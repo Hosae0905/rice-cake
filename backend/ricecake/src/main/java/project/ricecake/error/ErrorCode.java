@@ -15,6 +15,7 @@ public enum ErrorCode {
     NOT_FOUND("DEFAULT_E001", "찾을 수 없는 데이터"),
     DUPLICATE("DEFAULT_E002", "중복된 데이터"),
     UNAUTHORIZED("DEFAULT_E003", "인증 실패"),
+    FORBIDDEN("DEFAULT_E004", "접근할 수 없습니다."),
 
     // Member 관련 에러코드
     USER_NOT_FOUND("MEMBER_E001", "회원을 찾을 수 없습니다."),
