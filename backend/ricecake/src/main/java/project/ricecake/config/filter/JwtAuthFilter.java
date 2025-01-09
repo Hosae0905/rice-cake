@@ -10,7 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import project.ricecake.member.service.MemberDetailsServiceImpl;
+import project.ricecake.member.service.UserDetailsServiceImpl;
 import project.ricecake.utils.JwtUtils;
 
 import java.io.IOException;
@@ -20,7 +20,7 @@ import java.io.IOException;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
-    private final MemberDetailsServiceImpl memberDetailsService;
+    private final UserDetailsServiceImpl memberDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

@@ -20,7 +20,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import project.ricecake.config.filter.JwtAuthFilter;
 import project.ricecake.error.ErrorCode;
 import project.ricecake.error.ErrorResponse;
-import project.ricecake.member.service.MemberDetailsServiceImpl;
+import project.ricecake.member.service.UserDetailsServiceImpl;
 import project.ricecake.utils.JwtUtils;
 
 import java.io.PrintWriter;
@@ -32,7 +32,7 @@ import java.util.List;
 public class WebSecurityConfig {
 
     private final JwtUtils jwtUtils;
-    private final MemberDetailsServiceImpl memberDetailsService;
+    private final UserDetailsServiceImpl memberDetailsService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
