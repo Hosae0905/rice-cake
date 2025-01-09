@@ -1,9 +1,6 @@
 package project.ricecake.member.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import project.ricecake.common.BaseResponse;
@@ -13,16 +10,19 @@ import project.ricecake.error.exception.unauthorized.InvalidPasswordException;
 import project.ricecake.member.domain.request.PostLoginReq;
 import project.ricecake.member.domain.request.PostSignupReq;
 import project.ricecake.member.domain.entity.MemberEntity;
+import project.ricecake.member.domain.response.PostLoginRes;
 import project.ricecake.member.repository.MemberRepository;
+import project.ricecake.utils.JwtUtils;
 
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class MemberService implements UserDetailsService {
+public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtils jwtUtils;
 
     public Object memberSignup(PostSignupReq postSignupReq) {
 
@@ -47,23 +47,13 @@ public class MemberService implements UserDetailsService {
         if (findMember.isPresent()) {
             MemberEntity member = findMember.get();
             if (passwordEncoder.matches(postLoginReq.getMemberPw(), member.getPassword())) {
-                return BaseResponse.successResponse("MEMBER_002", true, "로그인 성공", "ok");
+                String token = jwtUtils.generateToken(member.getMemberIdx(), member.getMemberId());
+                return BaseResponse.successResponse("MEMBER_002", true, "로그인 성공", PostLoginRes.buildLoginRes(token));
             } else {
                 throw new InvalidPasswordException();
             }
         }
 
         throw new UserNotFoundException();
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String memberId) {
-        Optional<MemberEntity> member = memberRepository.findByMemberId(memberId);
-
-        if (member.isPresent()) {
-            return member.get();
-        } else {
-            throw new UserNotFoundException();
-        }
     }
 }
