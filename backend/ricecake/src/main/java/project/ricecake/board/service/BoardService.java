@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import project.ricecake.board.domain.entity.BoardEntity;
 import project.ricecake.board.domain.request.PostCreateBoardReq;
 import project.ricecake.board.domain.response.GetBoardListRes;
@@ -21,11 +22,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
 
+    @Transactional
     public Object createBoard(PostCreateBoardReq postCreateBoardReq) {
         Optional<MemberEntity> findMember = memberRepository.findByMemberId(postCreateBoardReq.getMemberId());
         if (findMember.isPresent()) {
