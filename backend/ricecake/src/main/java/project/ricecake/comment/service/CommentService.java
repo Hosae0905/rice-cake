@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import project.ricecake.board.domain.entity.BoardEntity;
 import project.ricecake.board.repository.BoardRepository;
 import project.ricecake.comment.domain.entity.CommentEntity;
@@ -22,12 +23,14 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class CommentService {
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
 
+    @Transactional
     public Object writeComment(PostWriteCommentReq postWriteCommentReq) {
 
         MemberEntity member = null;
