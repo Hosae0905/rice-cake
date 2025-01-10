@@ -47,7 +47,7 @@ public class BoardEntity {
     @JoinColumn(name = "member_Idx")
     private MemberEntity member;
 
-    @OneToMany(mappedBy = "commentIdx")
+    @OneToMany(mappedBy = "commentIdx", fetch = FetchType.LAZY)
     private List<CommentEntity> comments = new ArrayList<>();
 
     public static BoardEntity buildBoard(PostCreateBoardReq postCreateBoardReq, MemberEntity member) {
