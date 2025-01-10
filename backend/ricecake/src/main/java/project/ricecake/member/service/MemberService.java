@@ -3,6 +3,7 @@ package project.ricecake.member.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import project.ricecake.common.BaseResponse;
 import project.ricecake.error.exception.duplicate.UserDuplicateException;
 import project.ricecake.error.exception.notfound.UserNotFoundException;
@@ -18,12 +19,14 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
 
+    @Transactional
     public Object memberSignup(PostSignupReq postSignupReq) {
 
         Optional<MemberEntity> findMember = memberRepository.findByMemberId(postSignupReq.getMemberId());

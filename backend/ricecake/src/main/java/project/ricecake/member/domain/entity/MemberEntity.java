@@ -49,10 +49,10 @@ public class MemberEntity implements UserDetails {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "boardIdx")
+    @OneToMany(mappedBy = "boardIdx", fetch = FetchType.LAZY)
     private List<BoardEntity> boards = new ArrayList<>();
 
-    @OneToMany(mappedBy = "commentIdx")
+    @OneToMany(mappedBy = "commentIdx", fetch = FetchType.LAZY)
     private List<CommentEntity> comments = new ArrayList<>();
 
     public static MemberEntity buildMember(PostSignupReq postSignupReq, PasswordEncoder passwordEncoder) {
