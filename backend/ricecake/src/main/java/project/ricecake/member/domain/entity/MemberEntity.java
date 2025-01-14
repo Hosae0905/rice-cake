@@ -50,9 +50,11 @@ public class MemberEntity implements UserDetails {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "boardIdx", fetch = FetchType.LAZY)
+    @Builder.Default
     private List<BoardEntity> boards = new ArrayList<>();
 
     @OneToMany(mappedBy = "commentIdx", fetch = FetchType.LAZY)
+    @Builder.Default
     private List<CommentEntity> comments = new ArrayList<>();
 
     public static MemberEntity buildMember(PostSignupReq postSignupReq, PasswordEncoder passwordEncoder) {

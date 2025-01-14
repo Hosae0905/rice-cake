@@ -6,27 +6,34 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import project.ricecake.common.BaseResponse;
+import project.ricecake.config.WebSecurityConfig;
 import project.ricecake.error.exception.duplicate.UserDuplicateException;
 import project.ricecake.error.exception.notfound.UserNotFoundException;
 import project.ricecake.error.exception.unauthorized.InvalidPasswordException;
 import project.ricecake.member.domain.request.PostLoginReq;
 import project.ricecake.member.domain.request.PostSignupReq;
+import project.ricecake.member.domain.response.PostLoginRes;
 import project.ricecake.member.service.MemberService;
+import project.ricecake.member.service.UserDetailsServiceImpl;
+import project.ricecake.utils.JwtUtils;
 
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
+@Import({WebSecurityConfig.class})
 @WebMvcTest(controllers = MemberController.class)
+@AutoConfigureMockMvc
 class MemberControllerTest {
 
     @Autowired
@@ -37,6 +44,12 @@ class MemberControllerTest {
 
     @MockBean
     private MemberService memberService;
+
+    @MockBean
+    private JwtUtils jwtUtils;
+
+    @MockBean
+    private UserDetailsServiceImpl userDetailsService;
 
     @DisplayName("1. 회원가입 성공 테스트")
     @Test
@@ -185,8 +198,10 @@ class MemberControllerTest {
     void memberLogin() throws Exception {
 
         //given
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJpZHgiOjExLCJtZW1iZXJJZCI6Im1lbWJlcjExIiwiaWF0IjoxNzM2ODM2MDc1LCJleHAiOjE3MzY4Mzk2NzV9.5GplE6_zcMmNqxm1WUwXv58OpURzKCDKB51FAb3iq1M";
         PostLoginReq loginReq = new PostLoginReq("member01", "qwer1234!");
-        BaseResponse<Object> baseResponse = BaseResponse.successResponse("MEMBER_002", true, "로그인 성공", "ok");
+        PostLoginRes loginRes = PostLoginRes.buildLoginRes(token);
+        BaseResponse<Object> baseResponse = BaseResponse.successResponse("MEMBER_002", true, "로그인 성공", objectMapper.writeValueAsString(loginRes));
 
         //when
         given(memberService.memberLogin(any(PostLoginReq.class))).willReturn(baseResponse);
@@ -203,7 +218,7 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$.code").value("MEMBER_002"))
                 .andExpect(jsonPath("$.isSuccess").value("true"))
                 .andExpect(jsonPath("$.message").value("로그인 성공"))
-                .andExpect(jsonPath("$.result").value("ok"))
+                .andExpect(jsonPath("$.result").value(objectMapper.writeValueAsString(loginRes)))
                 .andDo(print());
     }
 
