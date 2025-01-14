@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -16,8 +17,11 @@ import project.ricecake.board.domain.response.GetBoardListRes;
 import project.ricecake.board.domain.response.GetBoardRes;
 import project.ricecake.board.service.BoardService;
 import project.ricecake.common.BaseResponse;
+import project.ricecake.config.WebSecurityConfig;
 import project.ricecake.error.exception.notfound.BoardNotFoundException;
 import project.ricecake.error.exception.notfound.UserNotFoundException;
+import project.ricecake.member.service.UserDetailsServiceImpl;
+import project.ricecake.utils.JwtUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
+@Import({WebSecurityConfig.class})
 @WebMvcTest(controllers = BoardController.class)
 class BoardControllerTest {
 
@@ -41,6 +46,12 @@ class BoardControllerTest {
 
     @MockBean
     private BoardService boardService;
+
+    @MockBean
+    private JwtUtils jwtUtils;
+
+    @MockBean
+    private UserDetailsServiceImpl userDetailsService;
 
     @DisplayName("1. 게시글 성공 테스트")
     @Test
