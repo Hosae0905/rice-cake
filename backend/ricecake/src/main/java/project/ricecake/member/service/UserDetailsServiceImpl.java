@@ -5,7 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import project.ricecake.error.exception.notfound.UserNotFoundException;
+import project.ricecake.error.ErrorCode;
 import project.ricecake.member.domain.entity.MemberEntity;
 import project.ricecake.member.repository.MemberRepository;
 
@@ -24,7 +24,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (member.isPresent()) {
             return member.get();
         } else {
-            throw new UserNotFoundException();
+            throw new UsernameNotFoundException(ErrorCode.USER_NOT_FOUND.getMessage());
         }
     }
 }

@@ -27,7 +27,7 @@ public class MemberService {
     private final JwtUtils jwtUtils;
 
     @Transactional
-    public Object memberSignup(PostSignupReq postSignupReq) {
+    public BaseResponse<Object> memberSignup(PostSignupReq postSignupReq) {
 
         Optional<MemberEntity> findMember = memberRepository.findByMemberId(postSignupReq.getMemberId());
 
@@ -44,7 +44,7 @@ public class MemberService {
         }
     }
 
-    public Object memberLogin(PostLoginReq postLoginReq) {
+    public BaseResponse<Object> memberLogin(PostLoginReq postLoginReq) {
         Optional<MemberEntity> findMember = memberRepository.findByMemberId(postLoginReq.getMemberId());
 
         if (findMember.isPresent()) {
