@@ -9,14 +9,18 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import project.ricecake.comment.domain.request.PostWriteCommentReq;
 import project.ricecake.comment.service.CommentService;
 import project.ricecake.common.BaseResponse;
+import project.ricecake.config.WebSecurityConfig;
 import project.ricecake.error.exception.notfound.BoardNotFoundException;
 import project.ricecake.error.exception.notfound.UserNotFoundException;
+import project.ricecake.member.service.UserDetailsServiceImpl;
+import project.ricecake.utils.JwtUtils;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
@@ -26,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
+@Import({WebSecurityConfig.class})
 @WebMvcTest(controllers = CommentController.class)
 class CommentControllerTest {
 
@@ -37,6 +42,12 @@ class CommentControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockBean
+    private JwtUtils jwtUtils;
+
+    @MockBean
+    private UserDetailsServiceImpl userDetailsService;
 
     @DisplayName("1. 댓글 작성 성공 테스트")
     @Test
