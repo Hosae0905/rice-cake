@@ -177,6 +177,8 @@ class BoardControllerTest {
     void getBoardListSuccess() throws Exception {
 
         //given
+        int page = 1;
+        int size = 10;
         List<GetBoardListRes> boardList = new ArrayList<>();
         GetBoardListRes boardListRes1 = GetBoardListRes.buildBoardListRes("first board", "test content", "member01");
         GetBoardListRes boardListRes2 = GetBoardListRes.buildBoardListRes("second board", "test content", "member02");
@@ -188,7 +190,7 @@ class BoardControllerTest {
                 "BOARD_002", true, "게시글 조회 성공", objectMapper.writeValueAsString(boardList));
 
         //when
-        given(boardService.getBoardList()).willReturn(baseResponse);
+        given(boardService.getBoardList(page, size)).willReturn(baseResponse);
 
         ResultActions resultActions = mockMvc.perform(
                 get("/api/v1/board")
@@ -209,9 +211,11 @@ class BoardControllerTest {
     void getBoardListFailNotFoundBoard() throws Exception {
 
         //given
+        int page = 1;
+        int size = 10;
 
         //when
-        given(boardService.getBoardList()).willThrow(new BoardNotFoundException());
+        given(boardService.getBoardList(page, size)).willThrow(new BoardNotFoundException());
 
         ResultActions resultActions = mockMvc.perform(
                 get("/api/v1/board")
