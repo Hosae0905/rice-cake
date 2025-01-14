@@ -19,7 +19,7 @@ public class CommentController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "{boardIdx}")
-    public ResponseEntity<Object> writeComment(
+    public ResponseEntity<Object> getCommentList(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @PathVariable Long boardIdx
