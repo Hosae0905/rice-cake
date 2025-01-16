@@ -15,6 +15,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * BoardEntity
+ * DB에 저장할 게시글 정보를 담을 클래스
+ */
 @Entity
 @Table(name = "board")
 @Getter
@@ -50,6 +54,12 @@ public class BoardEntity {
     @OneToMany(mappedBy = "commentIdx", fetch = FetchType.LAZY)
     private List<CommentEntity> comments = new ArrayList<>();
 
+    /**
+     * DB에 저장할 BoardEntity 객체를 생성
+     * @param postCreateBoardReq (게시글 생성 요청 DTO)
+     * @param member (연관관계 주입을 위한 회원 객체)
+     * @return BoardEntity 객체
+     */
     public static BoardEntity buildBoard(PostCreateBoardReq postCreateBoardReq, MemberEntity member) {
         return BoardEntity.builder()
                 .boardTitle(postCreateBoardReq.getBoardTitle())
