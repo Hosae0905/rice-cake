@@ -21,6 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * BoardService
+ * 게시글에 관련된 기능들의 서비스 로직을 처리하기 위한 클래스
+ */
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -28,9 +32,20 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
 
+    /**
+     * 게시글 생성 서비스 로직
+     * @param postCreateBoardReq (게시글 생성 요청 DTO)
+     * @return 게시글 생성 성공 응답 객체(String)
+     * @throws UserNotFoundException : 작성자 회원 정보를 찾을 수 없을 경우
+     */
     @Transactional
     public BaseResponse<Object> createBoard(PostCreateBoardReq postCreateBoardReq) {
         Optional<MemberEntity> findMember = memberRepository.findByMemberId(postCreateBoardReq.getMemberId());
+
+        /**
+         * 만약 작성자가 있다면 작성자 정보와 게시글 생성 요청 정보를 통해 게시글을 만들어 DB에 저장하고 성공 응답을 반환
+         * 그렇지 않을 경우 UserNotFoundException 예외를 throw
+         */
         if (findMember.isPresent()) {
             MemberEntity member = findMember.get();
             BoardEntity board = BoardEntity.buildBoard(postCreateBoardReq, member);
@@ -41,10 +56,21 @@ public class BoardService {
         }
     }
 
+    /**
+     * 게시글 목록 조회 서비스 로직
+     * @param page (페이지 번호)
+     * @param size (페이지 크기)
+     * @return 게시글 목록 조회 성공 응답(List<GetBoardListRes>)
+     * @throws BoardNotFoundException : 게시글을 찾을 수 없을 경우
+     */
     public BaseResponse<Object> getBoardList(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
-
         Page<BoardEntity> boards = boardRepository.findAll(pageable);
+
+        /**
+         * 만약 게시글이 있으면 게시글 목록을 List에 담아서 성공 응답으로 반환
+         * 그렇지 않다면 BoardNotFoundException 예외를 throw
+         */
         if (!boards.isEmpty()) {
             List<GetBoardListRes> boardList = new ArrayList<>();
 
@@ -58,9 +84,19 @@ public class BoardService {
         }
     }
 
+    /**
+     * 게시글 단건 조회 서비스 로직
+     * @param boardIdx (게시글 인덱스)
+     * @return 게시글 단건 조회 성공 응답(GetBoardRes)
+     * @throws BoardNotFoundException : 게시글을 찾을 수 없을 경우
+     */
     public BaseResponse<Object> getBoard(Long boardIdx) {
         Optional<BoardEntity> findBoard = boardRepository.findByBoardIdx(boardIdx);
 
+        /**
+         * 만약 게시글이 있다면 게시글 정보를 통해 응답 DTO를 생성하여 성공 응답을 반환
+         * 그렇지 않다면 BoardNotFoundException 예외를 throw
+         */
         if (findBoard.isPresent()) {
             BoardEntity board = findBoard.get();
             GetBoardRes boardRes = GetBoardRes.buildBoardRes(board.getBoardTitle(), board.getBoardContent(), board.getMember().getMemberName());
