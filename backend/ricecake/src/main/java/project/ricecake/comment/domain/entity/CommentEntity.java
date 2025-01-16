@@ -13,6 +13,10 @@ import project.ricecake.member.domain.entity.MemberEntity;
 
 import java.time.LocalDateTime;
 
+/**
+ * CommentEntity
+ * DB에 저장할 댓글 정보를 담을 클래스
+ */
 @Entity
 @Table(name = "comment")
 @Getter
@@ -45,6 +49,13 @@ public class CommentEntity {
     @JoinColumn(name = "board_Idx")
     private BoardEntity board;
 
+    /**
+     * DB에 저장할 CommentEntity 객체를 생성
+     * @param postWriteCommentReq (댓글 작성 요청 DTO)
+     * @param member              (연관관계 주입을 위한 회원 객체)
+     * @param board               (연관관계 주입을 위한 게시글 객체)
+     * @return CommentEntity 객체
+     */
     public static CommentEntity buildComment(PostWriteCommentReq postWriteCommentReq, MemberEntity member, BoardEntity board) {
         return CommentEntity.builder()
                 .commentContent(postWriteCommentReq.getCommentContent())
