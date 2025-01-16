@@ -29,7 +29,7 @@ public class BoardService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public Object createBoard(PostCreateBoardReq postCreateBoardReq) {
+    public BaseResponse<Object> createBoard(PostCreateBoardReq postCreateBoardReq) {
         Optional<MemberEntity> findMember = memberRepository.findByMemberId(postCreateBoardReq.getMemberId());
         if (findMember.isPresent()) {
             MemberEntity member = findMember.get();
@@ -41,7 +41,7 @@ public class BoardService {
         }
     }
 
-    public Object getBoardList(int page, int size) {
+    public BaseResponse<Object> getBoardList(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
 
         Page<BoardEntity> boards = boardRepository.findAll(pageable);
@@ -58,7 +58,7 @@ public class BoardService {
         }
     }
 
-    public Object getBoard(Long boardIdx) {
+    public BaseResponse<Object> getBoard(Long boardIdx) {
         Optional<BoardEntity> findBoard = boardRepository.findByBoardIdx(boardIdx);
 
         if (findBoard.isPresent()) {
