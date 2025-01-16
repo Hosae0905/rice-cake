@@ -16,6 +16,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * MemberEntity
+ * DB에 저장할 회원 정보를 담을 클래스
+ */
 @Entity
 @Table(name = "member")
 @AllArgsConstructor
@@ -57,6 +61,12 @@ public class MemberEntity implements UserDetails {
     @Builder.Default
     private List<CommentEntity> comments = new ArrayList<>();
 
+    /**
+     * DB에 저장할 MemberEntity 객체를 생성한다.
+     * @param postSignupReq (회원가입 요청 DTO)
+     * @param passwordEncoder (비밀번호를 암호화에 사용할 객체)
+     * @return MemberEntity 객체
+     */
     public static MemberEntity buildMember(PostSignupReq postSignupReq, PasswordEncoder passwordEncoder) {
         return MemberEntity.builder()
                 .memberId(postSignupReq.getMemberId())
