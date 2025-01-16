@@ -8,6 +8,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * PostWriteCommentReq
+ * 클라이언트의 댓글 작성 요청 정보를 담을 DTO 클래스
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
