@@ -4,6 +4,10 @@ import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/**
+ * PostSignupReq
+ * 클라이언트의 회원가입 요청 정보를 담을 DTO 클래스
+ */
 @AllArgsConstructor
 @Getter
 public class PostSignupReq {
