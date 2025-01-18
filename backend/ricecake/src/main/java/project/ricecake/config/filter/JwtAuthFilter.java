@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,10 +36,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             if (jwtUtils.validateToken(token, member.getUsername())) {
                 UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(member, member.getPassword(), member.getAuthorities());
+                        new UsernamePasswordAuthenticationToken(member.getUsername(), member.getPassword(), member.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
-            filterChain.doFilter(request, response);
         }
 
         filterChain.doFilter(request, response);
