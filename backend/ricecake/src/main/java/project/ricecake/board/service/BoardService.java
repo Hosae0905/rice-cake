@@ -39,8 +39,10 @@ public class BoardService {
      * @throws UserNotFoundException : 작성자 회원 정보를 찾을 수 없을 경우
      */
     @Transactional
-    public BaseResponse<Object> createBoard(PostCreateBoardReq postCreateBoardReq) {
-        Optional<MemberEntity> findMember = memberRepository.findByMemberId(postCreateBoardReq.getMemberId());
+    public BaseResponse<Object> createBoard(String memberId, PostCreateBoardReq postCreateBoardReq) {
+
+        // 인증된 회원의 아이디를 활용해서 DB에서 회원을 찾기
+        Optional<MemberEntity> findMember = memberRepository.findByMemberId(memberId);
 
         /**
          * 만약 작성자가 있다면 작성자 정보와 게시글 생성 요청 정보를 통해 게시글을 만들어 DB에 저장하고 성공 응답을 반환
