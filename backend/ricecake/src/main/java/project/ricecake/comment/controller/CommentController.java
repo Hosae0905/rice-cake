@@ -3,6 +3,7 @@ package project.ricecake.comment.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import project.ricecake.comment.domain.request.PostWriteCommentReq;
 import project.ricecake.comment.service.CommentService;
@@ -20,12 +21,13 @@ public class CommentController {
 
     /**
      * 댓글 작성 API
+     * @param memberId            (인증된 회원 아이디)
      * @param postWriteCommentReq (댓글 작성 요청 DTO)
      * @return 댓글 작성 성공 응답
      */
     @RequestMapping(method = RequestMethod.POST, value = "/write")
-    public ResponseEntity<Object> writeComment(@RequestBody @Valid PostWriteCommentReq postWriteCommentReq) {
-        return ResponseEntity.ok().body(commentService.writeComment(postWriteCommentReq));
+    public ResponseEntity<Object> writeComment(@AuthenticationPrincipal String memberId, @RequestBody @Valid PostWriteCommentReq postWriteCommentReq) {
+        return ResponseEntity.ok().body(commentService.writeComment(memberId, postWriteCommentReq));
     }
 
     /**
