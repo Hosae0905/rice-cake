@@ -42,12 +42,12 @@ public class CommentService {
      * @throws BoardNotFoundException : 댓글을 작성할 게시글 정보를 찾을 수 없을 경우
      */
     @Transactional
-    public Object writeComment(PostWriteCommentReq postWriteCommentReq) {
+    public Object writeComment(String memberId, PostWriteCommentReq postWriteCommentReq) {
 
         MemberEntity member = null;
         BoardEntity board = null;
 
-        Optional<MemberEntity> findMember = memberRepository.findByMemberId(postWriteCommentReq.getMemberId());
+        Optional<MemberEntity> findMember = memberRepository.findByMemberId(memberId);
 
         /**
          * 만약 회원이 있다면 변수에 회원 정보를 저장
