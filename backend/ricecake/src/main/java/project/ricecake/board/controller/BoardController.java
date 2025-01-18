@@ -2,7 +2,10 @@ package project.ricecake.board.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import project.ricecake.board.domain.request.PostCreateBoardReq;
 import project.ricecake.board.service.BoardService;
@@ -16,17 +19,19 @@ import project.ricecake.common.BaseResponse;
 @RestController
 @RequestMapping("/api/v1/board")
 @RequiredArgsConstructor
+@Slf4j
 public class BoardController {
     private final BoardService boardService;
 
     /**
      * 게시글 작성 API
+     * @param memberId           (인증된 회원 아이디)
      * @param postCreateBoardReq (게시글 생성 요청 DTO)
      * @return 게시글 생성 성공 응답
      */
     @RequestMapping(method = RequestMethod.POST, value = "/create")
-    public ResponseEntity<BaseResponse<Object>> createBoard(@RequestBody @Valid PostCreateBoardReq postCreateBoardReq) {
-        return ResponseEntity.ok().body(boardService.createBoard(postCreateBoardReq));
+    public ResponseEntity<BaseResponse<Object>> createBoard(@AuthenticationPrincipal String memberId, @RequestBody @Valid PostCreateBoardReq postCreateBoardReq) {
+        return ResponseEntity.ok().body(boardService.createBoard(memberId, postCreateBoardReq));
     }
 
     /**
