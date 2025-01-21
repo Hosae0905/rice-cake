@@ -28,7 +28,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
-@EnableWebSecurity
+/**
+ * WebSecurityConfig
+ * Spring Security 구성 정보 클래스
+ */
+@EnableWebSecurity  // 애노테이션을 추가하여 Spring Security Filter Chain 자동으로 등록
 @Configuration
 @RequiredArgsConstructor
 public class WebSecurityConfig {
@@ -36,6 +40,12 @@ public class WebSecurityConfig {
     private final JwtUtils jwtUtils;
     private final UserDetailsServiceImpl memberDetailsService;
 
+    /**
+     * Security Filter Chain 설정
+     * @param http (Filter Chain 정보)
+     * @return Spring Security Filter Chain 구성 정보
+     * @throws Exception : 설정에서 문제가 발생할 경우
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -81,6 +91,10 @@ public class WebSecurityConfig {
         return http.build();
     }
 
+    /**
+     * CORS 설정 정보
+     * @return CORS 설정 정보를 반환
+     */
     public CorsConfigurationSource corsConfigurer() {
         CorsConfiguration corsConfig = new CorsConfiguration();
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -94,17 +108,29 @@ public class WebSecurityConfig {
         return source;
     }
 
+    /**
+     * 인가에서 예외가 발생할 경우 처리하기 위한 예외 핸들러
+     */
     private final AccessDeniedHandler accessDeniedHandler = ((request, response, accessDeniedException) -> {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.FORBIDDEN.value(), ErrorCode.FORBIDDEN);
         securityErrorResponse(errorResponse, response);
     });
 
+    /**
+     * 인증에서 예외가 발생할 경우 처리하기 위한 예외 핸들러
+     */
     private final AuthenticationEntryPoint authenticationEntryPoint = ((request, response, authException) -> {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), ErrorCode.UNAUTHORIZED);
         securityErrorResponse(errorResponse, response);
     });
 
 
+    /**
+     * Spring Security에서 사용할 예외 응답
+     * @param errorResponse (클라이언트에게 반환할 예외 응답 객체)
+     * @param response      (클라이언트에게 반환할 응답 객체)
+     * @throws IOException : 클라이언트에게 반환할 때 IO 오류가 발생할 경우
+     */
     private void securityErrorResponse(ErrorResponse errorResponse, HttpServletResponse response) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
 
