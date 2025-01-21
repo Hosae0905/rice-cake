@@ -1,6 +1,7 @@
 package project.ricecake.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,6 +24,7 @@ import project.ricecake.error.ErrorResponse;
 import project.ricecake.member.service.UserDetailsServiceImpl;
 import project.ricecake.utils.JwtUtils;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
@@ -37,28 +39,42 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                // URL 매칭
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers("api/v1/member/**").permitAll()
                         .requestMatchers("api/v1/board/**").permitAll()
                         .requestMatchers("api/v1/comment/**").permitAll()
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated())
+
+                // Form Login 비활성화
                 .formLogin(AbstractHttpConfigurer::disable)
+
+                // Http Basic 인증 방식을 비활성화
+                .httpBasic(AbstractHttpConfigurer::disable)
+
+                // csrf 비활성화
                 .csrf(AbstractHttpConfigurer::disable)
+
+                // 직접 설정한 cors 정보를 사용
                 .cors(cors -> cors.configurationSource(corsConfigurer()))
+
+                // 세션 관리 정책을 무상태로 지정
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // 인증 및 인가에 대한 예외가 발생할 경우 처리할 수 있는 핸들러 등록
                 .exceptionHandling(exception -> exception
                         .accessDeniedHandler(accessDeniedHandler)
-                        .authenticationEntryPoint(authenticationEntryPoint)
-                )
+                        .authenticationEntryPoint(authenticationEntryPoint))
+
+                // 로그아웃을 할 시 어떻게 처리할 지 지정
                 .logout(logout -> logout
                         .logoutUrl("/api/v1/member/logout")
                         .logoutSuccessHandler(((request, response, authentication) -> {
                             response.sendRedirect("/login");
-                        }))
-                )
+                        })))
+
+                // JWT 인증 필터를 시큐리티 필터에 등록
                 .addFilterBefore(new JwtAuthFilter(jwtUtils, memberDetailsService), UsernamePasswordAuthenticationFilter.class)
         ;
 
@@ -69,40 +85,36 @@ public class WebSecurityConfig {
         CorsConfiguration corsConfig = new CorsConfiguration();
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
-        corsConfig.setAllowedOrigins(List.of("*"));
-        corsConfig.setAllowedHeaders(List.of("*"));
-        corsConfig.setAllowedMethods(List.of("GET", "POST", "PATCH", "DELETE"));
-        corsConfig.setAllowCredentials(true);
-        corsConfig.setMaxAge(3600L);
-        source.registerCorsConfiguration("/**", corsConfig);
+        corsConfig.setAllowedOrigins(List.of("*"));                // 모든 출처에 대해서 허용
+        corsConfig.setAllowedHeaders(List.of("*"));                // 모든 헤더에 대해서 허용
+        corsConfig.setAllowedMethods(List.of("GET", "POST", "PATCH", "DELETE"));    // 어떤 HTTP 메서드를 허용할 것인지 지정
+        corsConfig.setAllowCredentials(true);                          // 자격 증명을 포함한 요청을 허용
+        corsConfig.setMaxAge(3600L);                                   // preflight 요청에 대한 응답을 캐시할 수 있는 시간을 지정 (60분)
+        source.registerCorsConfiguration("/**", corsConfig);    // 등록
         return source;
     }
 
     private final AccessDeniedHandler accessDeniedHandler = ((request, response, accessDeniedException) -> {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.FORBIDDEN.value(), ErrorCode.FORBIDDEN);
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        response.setStatus(HttpStatus.FORBIDDEN.value());
-        response.setCharacterEncoding("UTF-8");
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-
-        String result = objectMapper.writeValueAsString(errorResponse);
-        PrintWriter writer = response.getWriter();
-        writer.write(result);
-        writer.flush();
+        securityErrorResponse(errorResponse, response);
     });
 
     private final AuthenticationEntryPoint authenticationEntryPoint = ((request, response, authException) -> {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), ErrorCode.UNAUTHORIZED);
+        securityErrorResponse(errorResponse, response);
+    });
+
+
+    private void securityErrorResponse(ErrorResponse errorResponse, HttpServletResponse response) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
 
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        response.setCharacterEncoding("UTF-8");
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());        // 응답 상태 코드를 지정
+        response.setCharacterEncoding("UTF-8");                     // 응답 문자 인코딩 형식 지정
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);  // 응답 Content-Type 형식 지정
 
         String result = objectMapper.writeValueAsString(errorResponse);
         PrintWriter writer = response.getWriter();
         writer.write(result);
         writer.flush();
-    });
+    }
 }
