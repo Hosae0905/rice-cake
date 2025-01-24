@@ -18,5 +18,12 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
      * @param memberId (회원 아이디)
      * @return Optional로 감싸진 MemberEntity 객체
      */
-    Optional<MemberEntity> findByMemberId(String memberId);     
+    Optional<MemberEntity> findByMemberId(String memberId);
+
+    /**
+     * 회원 아이디를 통해서 존재 유무를 확인
+     * @param memberId (회원 아이디)
+     * @return 회원 존재 유무
+     */
+    Boolean existsByMemberId(String memberId);
 }

@@ -41,13 +41,13 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public BaseResponse<Object> memberSignup(PostSignupReq postSignupReq) {
 
-        Optional<MemberEntity> findMember = memberRepository.findByMemberId(postSignupReq.getMemberId());
+        Boolean isMemberIdExists = memberRepository.existsByMemberId(postSignupReq.getMemberId());
 
         /**
          * 만약 회원이 존재하면 UserDuplicateException 예외를 던진다.
          * 그렇지 않으면 MemberEntity 객체를 생성한다.
          */
-        if (findMember.isPresent()) {
+        if (isMemberIdExists) {
             throw new UserDuplicateException();
         } else {
             MemberEntity memberEntity = MemberEntity.buildMember(postSignupReq, passwordEncoder);
