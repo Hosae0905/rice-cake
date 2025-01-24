@@ -1,5 +1,11 @@
 server:
   port: 9000
+  tomcat:
+    threads:
+      max: ${THREADS_MAX}
+      min-spare: ${THREADS_MIN_SPARE}
+    max-connections: ${TOMCAT_MAX_CONNECTIONS}
+    accept-count: ${TOMCAT_ACCEPT_COUNT}
 
 spring:
   datasource:
