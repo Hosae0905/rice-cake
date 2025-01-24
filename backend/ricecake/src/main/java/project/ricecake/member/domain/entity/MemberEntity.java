@@ -21,7 +21,7 @@ import java.util.List;
  * DB에 저장할 회원 정보를 담을 클래스
  */
 @Entity
-@Table(name = "member")
+@Table(name = "member", indexes = @Index(name = "member_id_index", columnList = "member_id", unique = true))
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
