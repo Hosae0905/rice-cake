@@ -1,9 +1,12 @@
 package project.ricecake.board.domain.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.time.LocalDateTime;
 
 /**
  * GetBoardRes
@@ -25,6 +28,10 @@ public class GetBoardRes {
     @Size(min = 2, max = 20, message = "회원의 이름은 최소 2자부터 최대 20자까지 가능합니다.")
     private String memberName;
 
+    @NotBlank(message = "게시글 생성 시간은 공백일 수 없습니다.")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDateTime createdAt;
+
     /**
      * GetBoardRes 객체 생성
      * @param boardTitle (게시글 제목)
@@ -32,11 +39,12 @@ public class GetBoardRes {
      * @param memberName (작성자 회원 이름)
      * @return GetBoardRes 객체
      */
-    public static GetBoardRes buildBoardRes(String boardTitle, String boardContent, String memberName) {
+    public static GetBoardRes buildBoardRes(String boardTitle, String boardContent, String memberName, LocalDateTime createdAt) {
         return GetBoardRes.builder()
                 .boardTitle(boardTitle)
                 .boardContent(boardContent)
                 .memberName(memberName)
+                .createdAt(createdAt)
                 .build();
     }
 }
