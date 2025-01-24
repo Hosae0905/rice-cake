@@ -34,11 +34,6 @@ public class BoardEntity {
     @Column(name = "board_title", nullable = false, length = 30)
     private String boardTitle;
 
-    // TODO: text 타입에 대해서 공부 필요
-    @Lob
-    @Column(name = "board_content", nullable = false, length = 256)
-    private String boardContent;
-
     @CreationTimestamp
     @Column(name = "started_at", nullable = false)
     private LocalDateTime startedAt;
@@ -54,6 +49,9 @@ public class BoardEntity {
     @OneToMany(mappedBy = "commentIdx", fetch = FetchType.LAZY)
     private List<CommentEntity> comments = new ArrayList<>();
 
+    @OneToOne(mappedBy = "board")
+    private BoardContent boardContent;
+
     /**
      * DB에 저장할 BoardEntity 객체를 생성
      * @param postCreateBoardReq (게시글 생성 요청 DTO)
@@ -63,7 +61,6 @@ public class BoardEntity {
     public static BoardEntity buildBoard(PostCreateBoardReq postCreateBoardReq, MemberEntity member) {
         return BoardEntity.builder()
                 .boardTitle(postCreateBoardReq.getBoardTitle())
-                .boardContent(postCreateBoardReq.getBoardContent())
                 .member(member)
                 .build();
     }
