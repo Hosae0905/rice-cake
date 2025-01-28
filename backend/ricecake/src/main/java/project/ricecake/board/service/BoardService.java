@@ -2,7 +2,11 @@ package project.ricecake.board.service;
 
 import org.springframework.stereotype.Service;
 import project.ricecake.board.domain.request.PostCreateBoardReq;
+import project.ricecake.board.domain.response.GetBoardListRes;
+import project.ricecake.board.domain.response.GetBoardRes;
 import project.ricecake.common.BaseResponse;
+
+import java.util.List;
 
 /**
  * BoardService 인터페이스
@@ -16,7 +20,7 @@ public interface BoardService {
      * @param postCreateBoardReq (게시글 생성 요청 DTO)
      * @return 게시글 생성 성공 응답 객체(Object)
      */
-    BaseResponse<Object> createBoard(String memberId, PostCreateBoardReq postCreateBoardReq);
+    BaseResponse<String> createBoard(String memberId, PostCreateBoardReq postCreateBoardReq);
 
     /**
      * 게시글 목록 조회 기능
@@ -24,12 +28,12 @@ public interface BoardService {
      * @param size (페이지 크기)
      * @return 게시글 목록 조회 성공 응답(Object)
      */
-    BaseResponse<Object> getBoardList(int page, int size);
+    BaseResponse<List<GetBoardListRes>> getBoardList(int page, int size);
 
     /**
      * 게시글 단건 조회 기능
      * @param boardIdx (게시글 인덱스)
      * @return 게시글 단건 조회 성공 응답(GetBoardRes)
      */
-    BaseResponse<Object> getBoard(Long boardIdx);
+    BaseResponse<GetBoardRes> getBoard(Long boardIdx);
 }

@@ -19,9 +19,7 @@ import project.ricecake.error.exception.notfound.UserNotFoundException;
 import project.ricecake.member.domain.entity.MemberEntity;
 import project.ricecake.member.repository.MemberRepository;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * BoardServiceImpl
@@ -43,27 +41,21 @@ public class BoardServiceImpl implements BoardService {
      * @throws UserNotFoundException : 작성자 회원 정보를 찾을 수 없을 경우
      */
     @Transactional
-    public BaseResponse<Object> createBoard(String memberId, PostCreateBoardReq postCreateBoardReq) {
-
-        // 인증된 회원의 아이디를 활용해서 DB에서 회원을 찾기
-        Optional<MemberEntity> findMember = memberRepository.findByMemberId(memberId);
+    public BaseResponse<String> createBoard(String memberId, PostCreateBoardReq postCreateBoardReq) {
 
         /**
          * 만약 작성자가 있다면 작성자 정보와 게시글 생성 요청 정보를 통해 게시글을 만들어 DB에 저장하고 성공 응답을 반환
          * 그렇지 않을 경우 UserNotFoundException 예외를 throw
          */
-        if (findMember.isPresent()) {
-            MemberEntity member = findMember.get();
-            BoardEntity board = BoardEntity.buildBoard(postCreateBoardReq, member);
-            BoardEntity saveBoard = boardRepository.save(board);
-            BoardContent boardContent = BoardContent.buildBoardContent(
-                    postCreateBoardReq.getBoardContent(),
-                    saveBoard);
-            boardContentRepository.save(boardContent);
-            return BaseResponse.successResponse("BOARD_001", true, "게시글 생성 성공", "ok");
-        } else {
-            throw new UserNotFoundException();
-        }
+
+        MemberEntity member = memberRepository.findByMemberId(memberId).orElseThrow(UserNotFoundException::new);
+        BoardEntity board = BoardEntity.buildBoard(postCreateBoardReq, member);
+        BoardEntity saveBoard = boardRepository.save(board);
+        BoardContent boardContent = BoardContent.buildBoardContent(
+                postCreateBoardReq.getBoardContent(),
+                saveBoard);
+        boardContentRepository.save(boardContent);
+        return BaseResponse.successResponse("BOARD_001", true, "게시글 생성 성공", "ok");
     }
 
     /**
@@ -73,7 +65,7 @@ public class BoardServiceImpl implements BoardService {
      * @return 게시글 목록 조회 성공 응답(List<GetBoardListRes>)
      * @throws BoardNotFoundException : 게시글을 찾을 수 없을 경우
      */
-    public BaseResponse<Object> getBoardList(int page, int size) {
+    public BaseResponse<List<GetBoardListRes>> getBoardList(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<BoardEntity> boards = boardRepository.findAll(pageable);
 
@@ -81,20 +73,21 @@ public class BoardServiceImpl implements BoardService {
          * 만약 게시글이 있으면 게시글 목록을 List에 담아서 성공 응답으로 반환
          * 그렇지 않다면 BoardNotFoundException 예외를 throw
          */
-        if (!boards.isEmpty()) {
-            List<GetBoardListRes> boardList = new ArrayList<>();
 
-            for (BoardEntity board : boards) {
-                boardList.add(GetBoardListRes.buildBoardListRes(
-                        board.getBoardTitle(),
-                        board.getMember().getMemberName(),
-                        board.getStartedAt()));
-            }
-
-            return BaseResponse.successResponse("BOARD_002", true, "게시글 조회 성공", boardList);
-        } else {
+        if (boards.isEmpty()) {
             throw new BoardNotFoundException();
         }
+
+        List<GetBoardListRes> boardList = boards.stream()
+                .map(board ->
+                    GetBoardListRes.buildBoardListRes(
+                            board.getBoardTitle(),
+                            board.getMember().getMemberName(),
+                            board.getStartedAt()
+                    ))
+                .toList();
+
+        return BaseResponse.successResponse("BOARD_002", true, "게시글 조회 성공", boardList);
     }
 
     /**
@@ -103,25 +96,25 @@ public class BoardServiceImpl implements BoardService {
      * @return 게시글 단건 조회 성공 응답(GetBoardRes)
      * @throws BoardNotFoundException : 게시글을 찾을 수 없을 경우
      */
-    public BaseResponse<Object> getBoard(Long boardIdx) {
-        Optional<BoardEntity> findBoard = boardRepository.findByBoardIdx(boardIdx);
+    public BaseResponse<GetBoardRes> getBoard(Long boardIdx) {
 
         /**
-         * 만약 게시글이 있다면 게시글 정보를 통해 응답 DTO를 생성하여 성공 응답을 반환
+         * 만약 게시글이 있다면 게시글 정보를 변수에 저장
          * 그렇지 않다면 BoardNotFoundException 예외를 throw
          */
-        if (findBoard.isPresent()) {
-            BoardEntity board = findBoard.get();
-            BoardContent boardContent = board.getBoardContent();
-            GetBoardRes boardRes = GetBoardRes.buildBoardRes(
-                    board.getBoardTitle(),
-                    boardContent.getBoardContent(),
-                    board.getMember().getMemberName(),
-                    boardContent.getCreatedAt());
+        BoardEntity board = boardRepository.findByBoardIdx(boardIdx).orElseThrow(BoardNotFoundException::new);
 
-            return BaseResponse.successResponse("BOARD_003", true, "게시글 단건 조회 성공", boardRes);
-        } else {
-            throw new BoardNotFoundException();
-        }
+        /**
+         * 게시글 정보를 통해 게시글 내용을 변수에 저장
+         * 게시글 정보와 내용을 포함한 응답 DTO를 생성하고 클라이언트에게 반환
+         */
+        BoardContent boardContent = board.getBoardContent();
+        GetBoardRes boardRes = GetBoardRes.buildBoardRes(
+                board.getBoardTitle(),
+                boardContent.getBoardContent(),
+                board.getMember().getMemberName(),
+                boardContent.getCreatedAt());
+
+        return BaseResponse.successResponse("BOARD_003", true, "게시글 단건 조회 성공", boardRes);
     }
 }
