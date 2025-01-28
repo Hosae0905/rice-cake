@@ -3,13 +3,11 @@ package project.ricecake.member.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import project.ricecake.common.BaseResponse;
 import project.ricecake.member.domain.request.PostLoginReq;
 import project.ricecake.member.domain.request.PostSignupReq;
+import project.ricecake.member.domain.response.PostLoginRes;
 import project.ricecake.member.service.MemberService;
 
 /**
@@ -29,8 +27,8 @@ public class MemberController {
      * @param postSignupReq (회원가입 요청 DTO)
      * @return 회원가입 성공 응답
      */
-    @RequestMapping(method = RequestMethod.POST, value = "/signup")
-    public ResponseEntity<BaseResponse<Object>> memberSignup(@RequestBody @Valid PostSignupReq postSignupReq) {
+    @PostMapping(value = "/signup")
+    public ResponseEntity<BaseResponse<String>> memberSignup(@RequestBody @Valid PostSignupReq postSignupReq) {
         return ResponseEntity.ok().body(memberService.memberSignup(postSignupReq));
     }
 
@@ -39,8 +37,8 @@ public class MemberController {
      * @param postLoginReq (로그인 요청 DTO)
      * @return 로그인 성공 응답
      */
-    @RequestMapping(method = RequestMethod.POST, value = "/login")
-    public ResponseEntity<BaseResponse<Object>> memberLogin(@RequestBody @Valid PostLoginReq postLoginReq) {
+    @PostMapping(value = "/login")
+    public ResponseEntity<BaseResponse<PostLoginRes>> memberLogin(@RequestBody @Valid PostLoginReq postLoginReq) {
         return ResponseEntity.ok().body(memberService.memberLogin(postLoginReq));
     }
 }
