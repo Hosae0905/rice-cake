@@ -7,8 +7,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import project.ricecake.board.domain.request.PostCreateBoardReq;
+import project.ricecake.board.domain.response.GetBoardListRes;
+import project.ricecake.board.domain.response.GetBoardRes;
 import project.ricecake.board.service.BoardService;
 import project.ricecake.common.BaseResponse;
+
+import java.util.List;
 
 /**
  * BoardController - v1
@@ -28,8 +32,8 @@ public class BoardController {
      * @param postCreateBoardReq (게시글 생성 요청 DTO)
      * @return 게시글 생성 성공 응답
      */
-    @RequestMapping(method = RequestMethod.POST, value = "/create")
-    public ResponseEntity<BaseResponse<Object>> createBoard(@AuthenticationPrincipal String memberId, @RequestBody @Valid PostCreateBoardReq postCreateBoardReq) {
+    @PostMapping(value = "/create")
+    public ResponseEntity<BaseResponse<String>> createBoard(@AuthenticationPrincipal String memberId, @RequestBody @Valid PostCreateBoardReq postCreateBoardReq) {
         return ResponseEntity.ok().body(boardService.createBoard(memberId, postCreateBoardReq));
     }
 
@@ -39,8 +43,8 @@ public class BoardController {
      * @param size (페이지 사이즈, 기본 값 10)
      * @return 게시글 목록 조회 성공 응답
      */
-    @RequestMapping(method = RequestMethod.GET, value = "")
-    public ResponseEntity<BaseResponse<Object>> getBoardList(
+    @GetMapping(value = "")
+    public ResponseEntity<BaseResponse<List<GetBoardListRes>>> getBoardList(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok().body(boardService.getBoardList(page, size));
@@ -51,8 +55,8 @@ public class BoardController {
      * @param boardIdx (게시글 인덱스)
      * @return 게시글 단건 조회 성공 응답
      */
-    @RequestMapping(method = RequestMethod.GET, value = "/{boardIdx}")
-    public ResponseEntity<BaseResponse<Object>> getBoard(@PathVariable Long boardIdx) {
+    @GetMapping(value = "/{boardIdx}")
+    public ResponseEntity<BaseResponse<GetBoardRes>> getBoard(@PathVariable Long boardIdx) {
         return ResponseEntity.ok().body(boardService.getBoard(boardIdx));
     }
 
