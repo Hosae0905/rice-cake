@@ -39,29 +39,27 @@ public class MemberServiceImpl implements MemberService {
      */
     @Transactional
     @Override
-    public BaseResponse<Object> memberSignup(PostSignupReq postSignupReq) {
+    public BaseResponse<String> memberSignup(PostSignupReq postSignupReq) {
 
         Boolean isMemberIdExists = memberRepository.existsByMemberId(postSignupReq.getMemberId());
 
-        /**
-         * 만약 회원이 존재하면 UserDuplicateException 예외를 던진다.
-         * 그렇지 않으면 MemberEntity 객체를 생성한다.
-         */
+        // 만약 회원이 존재하면 UserDuplicateException 예외를 throw
         if (isMemberIdExists) {
             throw new UserDuplicateException();
-        } else {
-            MemberEntity memberEntity = MemberEntity.buildMember(postSignupReq, passwordEncoder);
+        }
 
-            /**
-             * 만약 MemberEntity가 정상적으로 생성되었을 경우 DB에 저장하고 성공 응답을 반환한다.
-             * 그렇지 않을 경우 UserNotFoundException 예외를 던진다.
-             */
-            if (memberEntity != null) {
-                memberRepository.save(memberEntity);
-                return BaseResponse.successResponse("MEMBER_001", true, "회원가입 성공", "ok");
-            } else {
-                throw new UserNotFoundException();
-            }
+        // 회원이 존재하지 않을 경우 MemberEntity를 생성
+        MemberEntity memberEntity = MemberEntity.buildMember(postSignupReq, passwordEncoder);
+
+        /**
+         * 만약 MemberEntity가 정상적으로 생성되었을 경우 DB에 저장하고 성공 응답을 반환
+         * 그렇지 않을 경우 UserNotFoundException 예외를 throw
+         */
+        if (memberEntity != null) {
+            memberRepository.save(memberEntity);
+            return BaseResponse.successResponse("MEMBER_001", true, "회원가입 성공", "ok");
+        } else {
+            throw new UserNotFoundException();
         }
     }
 
@@ -73,28 +71,23 @@ public class MemberServiceImpl implements MemberService {
      * @throws UserNotFoundException : 회원을 찾을 수 없을 경우
      */
     @Override
-    public BaseResponse<Object> memberLogin(PostLoginReq postLoginReq) {
-        Optional<MemberEntity> findMember = memberRepository.findByMemberId(postLoginReq.getMemberId());
+    public BaseResponse<PostLoginRes> memberLogin(PostLoginReq postLoginReq) {
 
         /**
          * 만약 회원이 존재할 경우 MemberEntity 객체를 가져온다.
          * 그렇지 않을 경우 UserNotFoundException 예외를 던진다.
          */
-        if (findMember.isPresent()) {
-            MemberEntity member = findMember.get();
+        MemberEntity member = memberRepository.findByMemberId(postLoginReq.getMemberId()).orElseThrow(UserNotFoundException::new);
 
-            /**
-             * 만약 요청으로 받은 비밀번호와 MemberEntity 객체의 비밀번호가 같으면 JWT 토큰을 생성하고 성공 응답을 반환한다.
-             * 그렇지 않을 경우 InvalidPasswordException 예외를 던진다.
-             */
-            if (passwordEncoder.matches(postLoginReq.getMemberPw(), member.getPassword())) {
-                String token = jwtUtils.generateToken(member.getMemberIdx(), member.getMemberId());
-                return BaseResponse.successResponse("MEMBER_002", true, "로그인 성공", PostLoginRes.buildLoginRes(token));
-            } else {
-                throw new InvalidPasswordException();
-            }
+        /**
+         * 만약 요청으로 받은 비밀번호와 MemberEntity 객체의 비밀번호가 같으면 JWT 토큰을 생성하고 성공 응답을 반환한다.
+         * 그렇지 않을 경우 InvalidPasswordException 예외를 던진다.
+         */
+        if (passwordEncoder.matches(postLoginReq.getMemberPw(), member.getPassword())) {
+            String token = jwtUtils.generateToken(member.getMemberIdx(), member.getMemberId());
+            return BaseResponse.successResponse("MEMBER_002", true, "로그인 성공", PostLoginRes.buildLoginRes(token));
+        } else {
+            throw new InvalidPasswordException();
         }
-
-        throw new UserNotFoundException();
     }
 }
