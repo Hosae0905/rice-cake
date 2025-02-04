@@ -6,7 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import project.ricecake.comment.domain.request.PostWriteCommentReq;
+import project.ricecake.comment.domain.response.GetCommentListRes;
 import project.ricecake.comment.service.CommentService;
+import project.ricecake.common.BaseResponse;
+
+import java.util.List;
 
 /**
  * CommentController - v1
@@ -25,8 +29,11 @@ public class CommentController {
      * @param postWriteCommentReq (댓글 작성 요청 DTO)
      * @return 댓글 작성 성공 응답
      */
-    @RequestMapping(method = RequestMethod.POST, value = "/write")
-    public ResponseEntity<Object> writeComment(@AuthenticationPrincipal String memberId, @RequestBody @Valid PostWriteCommentReq postWriteCommentReq) {
+    @PostMapping("/write")
+    public ResponseEntity<BaseResponse<String>> writeComment(
+            @AuthenticationPrincipal String memberId,
+            @RequestBody @Valid PostWriteCommentReq postWriteCommentReq
+    ) {
         return ResponseEntity.ok().body(commentService.writeComment(memberId, postWriteCommentReq));
     }
 
@@ -37,11 +44,11 @@ public class CommentController {
      * @param boardIdx  (게시글 인덱스)
      * @return 댓글 목록 조회 성공 응답
      */
-    @RequestMapping(method = RequestMethod.GET, value = "{boardIdx}")
-    public ResponseEntity<Object> getCommentList(
+    @GetMapping("{boardIdx}")
+    public ResponseEntity<BaseResponse<List<GetCommentListRes>>> getCommentList(
+            @PathVariable Long boardIdx,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @PathVariable Long boardIdx
+            @RequestParam(defaultValue = "10") int size
     ) {
         return ResponseEntity.ok().body(commentService.getCommentList(page, size, boardIdx));
     }
